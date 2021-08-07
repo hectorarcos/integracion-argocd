@@ -1,0 +1,55 @@
+apiVersion: machine.openshift.io/v1beta1
+kind: MachineSet
+metadata:
+  labels:
+    machine.openshift.io/cluster-api-cluster: cluster-qps7m-4xwb6
+    machine.openshift.io/cluster-api-machine-role: worker
+    machine.openshift.io/cluster-api-machine-type: worker
+  name: infra-1c
+  namespace: openshift-machine-api
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      machine.openshift.io/cluster-api-cluster: cluster-qps7m-4xwb6
+      machine.openshift.io/cluster-api-machineset: infra-1c
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        machine.openshift.io/cluster-api-cluster: cluster-qps7m-4xwb6
+        machine.openshift.io/cluster-api-machine-role: worker
+        machine.openshift.io/cluster-api-machine-type: worker
+        machine.openshift.io/cluster-api-machineset: infra-1c
+    spec:
+      metadata:
+        labels:
+          failure-domain.beta.kubernetes.io/region: "regionOne"
+          failure-domain.beta.kubernetes.io/zone: "nova"
+          node-role.kubernetes.io/infra: ""
+      providerSpec:
+        value:
+          apiVersion: openstackproviderconfig.openshift.io/v1clpha1
+          cloudName: openstack
+          cloudsSecret:
+            name: openstack-cloud-credentials
+            namespace: openshift-machine-api
+          flavor: 4c16g30d
+          image: rhcos-ocp46
+          kind: OpenstackProviderSpec
+          networks:
+          - filter: {}
+            subnets:
+            - filter:
+                name: qps7m-ocp-subnet
+          securityGroups:
+          - filter: {}
+            name: qps7m-worker_sg
+          serverMetadata:
+            Name: cluster-qps7m-4xwb6-worker
+            openshiftClusterID: cluster-qps7m-4xwb6
+          tags:
+          - openshiftClusterID=cluster-qps7m-4xwb6
+          trunk: false
+          userDataSecret:
+            name: worker-user-data
